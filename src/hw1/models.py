@@ -5,7 +5,6 @@ import math
 from abc import ABC, abstractmethod
 from collections import Counter
 from pathlib import Path
-from typing import Any, Dict, List, Set
 
 import click
 from textblob import TextBlob
@@ -161,7 +160,7 @@ def rule_based(file_path, output, run_tag, schema_version):
 
     click.echo("Loading instances from %s..." % file_path)
     click.echo("Run tag: %s, Schema version: %s" % (run_tag, schema_ver))
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(input_file, encoding="utf-8") as f:
         data = json.load(f)
 
     classifier = RuleBasedClassifier()

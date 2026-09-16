@@ -2,11 +2,9 @@
 
 import json
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
 
 import click
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
 
 
 def plot_bar(data, title=None, xlabel=None, ylabel=None):
@@ -63,7 +61,7 @@ def plot(input_path, split, title, xlabel, ylabel, output):
 
     if input_file.exists() and input_file.suffix == ".json":
         click.echo("Loading metrics from %s..." % input_path)
-        with open(input_file, "r", encoding="utf-8") as f:
+        with open(input_file, encoding="utf-8") as f:
             data = json.load(f)
         # Handle metrics format with train/test splits
         if split in data:

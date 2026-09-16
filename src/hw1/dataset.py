@@ -3,7 +3,6 @@
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
 
 import click
 
@@ -11,9 +10,9 @@ import click
 @dataclass
 class SentimentInstance:
     """Represents a preprocessed sentiment instance."""
-    tokens: List[str]
+    tokens: list[str]
     label: int  # 1 for positive, 0 for negative
-    pred: Optional[int] = field(default=None)  # Prediction, assigned after classification
+    pred: int | None = field(default=None)  # Prediction, assigned after classification
 
 
 def tokenize(text):

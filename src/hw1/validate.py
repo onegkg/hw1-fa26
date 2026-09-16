@@ -7,9 +7,6 @@ Students must fix linting and type errors in this file.
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
-import os
-
 
 REQUIRED_METRICS = ["accuracy", "precision", "recall", "f1"]
 VALID_LABELS = [0, 1]
@@ -62,8 +59,7 @@ def validate_instances(data, schema_version=1):
 
     if len(errors) == 0:
         return True, errors
-    else:
-        return False, errors
+    return False, errors
 
 
 def validate_predictions(data, schema_version=1, instances_data=None):
@@ -118,8 +114,7 @@ def validate_predictions(data, schema_version=1, instances_data=None):
 
     if len(errors) == 0:
         return (True, errors)
-    else:
-        return (False, errors)
+    return (False, errors)
 
 
 def validate_metrics(data, schema_version=1):
@@ -166,8 +161,7 @@ def validate_metrics(data, schema_version=1):
 
     if len(errors) == 0:
         return True, errors
-    else:
-        return False, errors
+    return False, errors
 
 
 def validate_artifact(artifact_path, artifact_type, schema_version=1, instances_path=None):
@@ -189,7 +183,7 @@ def validate_artifact(artifact_path, artifact_type, schema_version=1, instances_
         return False
 
     try:
-        with open(path, "r") as f:
+        with open(path) as f:
             data = json.load(f)
     except json.JSONDecodeError as e:
         print("Error: %s is not valid JSON: %s" % (artifact_path, e), file=sys.stderr)
@@ -200,7 +194,7 @@ def validate_artifact(artifact_path, artifact_type, schema_version=1, instances_
     elif artifact_type == "predictions":
         instances_data = None
         if instances_path is not None:
-            with open(instances_path, "r") as f:
+            with open(instances_path) as f:
                 instances_data = json.load(f)
         is_valid, errors = validate_predictions(data, schema_version, instances_data)
     elif artifact_type == "metrics":
@@ -214,9 +208,8 @@ def validate_artifact(artifact_path, artifact_type, schema_version=1, instances_
         for error in errors:
             print("  - %s" % error, file=sys.stderr)
         return False
-    else:
-        print("Validation passed: %s" % artifact_path)
-        return True
+    print("Validation passed: %s" % artifact_path)
+    return True
 
 
 # CLI entry point

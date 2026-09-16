@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Union
 
 import click
 
@@ -51,8 +50,7 @@ def precision(predictions, labels, positive_label=1):
 
     if predicted_positives == 0:
         return 0.0
-    else:
-        return true_positives / predicted_positives
+    return true_positives / predicted_positives
 
 
 def recall(predictions, labels, positive_label=1):
@@ -78,8 +76,7 @@ def recall(predictions, labels, positive_label=1):
 
     if actual_positives == 0:
         return 0.0
-    else:
-        return true_positives / actual_positives
+    return true_positives / actual_positives
 
 
 def f1_score(predictions, labels, positive_label=1):
@@ -98,8 +95,7 @@ def f1_score(predictions, labels, positive_label=1):
 
     if p + r == 0:
         return 0.0
-    else:
-        return 2 * p * r / (p + r)
+    return 2 * p * r / (p + r)
 
 
 def compute_metrics(predictions, labels):
@@ -138,7 +134,7 @@ def evaluate(input_path, output, run_tag, schema_version):
 
     click.echo("Loading predictions from %s..." % input_path)
     click.echo("Run tag: %s, Schema version: %s" % (run_tag, schema_ver))
-    with open(input_path, "r", encoding="utf-8") as f:
+    with open(input_path, encoding="utf-8") as f:
         data = json.load(f)
 
     results = {}
