@@ -1,0 +1,58 @@
+[project]
+name = "hw1"
+version = "0.1.0"
+description = "Automation for NLP sentiment analysis"
+readme = "README.md"
+authors = [
+    { name = "Brandeis COSI 106b staff", email = "bohanjiang@brandeis.edu" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "click",
+    "matplotlib",
+    "textblob",
+]
+
+[dependency-groups]
+dev = [
+    "mypy",
+    "pytest",
+    "ruff",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "src/hw1"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear (includes B904: raise from)
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade (old-style formatting, type hints)
+    "RET",    # flake8-return (implicit returns, unnecessary else)
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["hw1"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+files = ["src/hw1"]

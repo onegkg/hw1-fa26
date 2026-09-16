@@ -1,0 +1,16 @@
+{
+  "name": "COSI 106B - HW1",
+  "image": "ghcr.io/brandeis-cosi-106b/hw1-fa26:latest",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "timonwong.shellcheck",
+        "github.vscode-github-actions"
+      ]
+    }
+  }
+}
