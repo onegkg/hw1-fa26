@@ -137,10 +137,21 @@ class NaiveBayesClassifier(Classifier):
 
 
 @click.command()
-@click.option("--file", "-f", "file_path", type=str, required=True, help="Path to instances JSON file from preprocess")
+@click.option(
+    "--file",
+    "-f",
+    "file_path",
+    type=str,
+    required=True,
+    help="Path to instances JSON file from preprocess",
+)
 @click.option("--output", "-o", default="build/", help="Output directory for predictions JSON")
-@click.option("--run-tag", default="default", help="Tag for this pipeline run (creates subdirectory)")
-@click.option("--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version")
+@click.option(
+    "--run-tag", default="default", help="Tag for this pipeline run (creates subdirectory)"
+)
+@click.option(
+    "--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version"
+)
 def rule_based(file_path, output, run_tag, schema_version):
     """Predict sentiment using rule-based classifier.
 
@@ -154,12 +165,12 @@ def rule_based(file_path, output, run_tag, schema_version):
 
     input_file = Path(file_path)
     if not input_file.exists():
-        raise click.UsageError("File not found: %s" % file_path)
+        raise click.UsageError(f"File not found: {file_path}")
     if input_file.suffix != ".json":
-        raise click.UsageError("File must be a JSON file: %s" % file_path)
+        raise click.UsageError(f"File must be a JSON file: {file_path}")
 
-    click.echo("Loading instances from %s..." % file_path)
-    click.echo("Run tag: %s, Schema version: %s" % (run_tag, schema_ver))
+    click.echo(f"Loading instances from {file_path}...")
+    click.echo(f"Run tag: {run_tag}, Schema version: {schema_ver}")
     with open(input_file, encoding="utf-8") as f:
         data = json.load(f)
 
@@ -179,7 +190,7 @@ def rule_based(file_path, output, run_tag, schema_version):
             )
             instances.append(inst)
 
-        click.echo("Making predictions for %s %s instances..." % (len(instances), split))
+        click.echo(f"Making predictions for {len(instances)} {split} instances...")
 
         split_results = []
         for inst in instances:
@@ -208,7 +219,7 @@ def rule_based(file_path, output, run_tag, schema_version):
     predictions_path = output_dir / "predictions.json"
     with open(predictions_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
-    click.echo("Saved predictions to %s" % predictions_path)
+    click.echo(f"Saved predictions to {predictions_path}")
 
 
 # CLI entry point: python -m hw1.models --help

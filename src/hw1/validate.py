@@ -37,25 +37,25 @@ def validate_instances(data, schema_version=1):
     # Check required top-level keys
     for split in ["train", "test"]:
         if split not in data:
-            errors.append("Missing required key: %s" % split)
+            errors.append(f"Missing required key: {split}")
             continue
 
         instances = data[split]
         if not isinstance(instances, list):
-            errors.append("%s must be a list" % split)
+            errors.append(f"{split} must be a list")
             continue
 
         for i, inst in enumerate(instances):
             # Check required instance fields
             if "tokens" not in inst:
-                errors.append("%s[%s]: missing 'tokens' field" % (split, i))
+                errors.append(f"{split}[{i}]: missing 'tokens' field")
             elif not isinstance(inst["tokens"], list):
-                errors.append("%s[%s]: 'tokens' must be a list" % (split, i))
+                errors.append(f"{split}[{i}]: 'tokens' must be a list")
 
             if "label" not in inst:
-                errors.append("%s[%s]: missing 'label' field" % (split, i))
+                errors.append(f"{split}[{i}]: missing 'label' field" % (split, i))
             elif inst["label"] not in VALID_LABELS:
-                errors.append("%s[%s]: 'label' must be 0 or 1, got %s" % (split, i, inst['label']))
+                errors.append(f"{split}[{i}]: 'label' must be 0 or 1, got %s")
 
     if len(errors) == 0:
         return True, errors
@@ -76,41 +76,41 @@ def validate_predictions(data, schema_version=1, instances_data=None):
 
     for split in ["train", "test"]:
         if split not in data:
-            errors.append("Missing required key: %s" % split)
+            errors.append(f"Missing required key: {split}")
             continue
 
         instances = data[split]
         if not isinstance(instances, list):
-            errors.append("%s must be a list" % split)
+            errors.append(f"{split} must be a list")
             continue
 
         for i, inst in enumerate(instances):
             if "pred" not in inst:
-                errors.append("%s[%s]: missing 'pred' field" % (split, i))
+                errors.append(f"{split}[{i}]: missing 'pred' field")
             elif inst["pred"] not in VALID_LABELS:
-                errors.append("%s[%s]: 'pred' must be 0 or 1, got %s" % (split, i, inst['pred']))
+                errors.append(f"{split}[{i}]: 'pred' must be 0 or 1, got {inst['pred']}")
 
             if "label" not in inst:
-                errors.append("%s[%s]: missing 'label' field" % (split, i))
+                errors.append(f"{split}[{i}]: missing 'label' field")
             elif inst["label"] not in VALID_LABELS:
-                errors.append("%s[%s]: 'label' must be 0 or 1" % (split, i))
+                errors.append(f"{split}[{i}]: 'label' must be 0 or 1")
 
             # Schema v2 requires confidence scores
             if schema_version == 2:
                 if "confidence" not in inst:
-                    errors.append("%s[%s]: schema v2 requires 'confidence' field" % (split, i))
+                    errors.append(f"{split}[{i}]: schema v2 requires 'confidence' field")
                 elif not isinstance(inst["confidence"], (int, float)):
-                    errors.append("%s[%s]: 'confidence' must be a number" % (split, i))
+                    errors.append(f"{split}[{i}]: 'confidence' must be a number")
                 elif not (0 <= inst["confidence"] <= 1):
-                    errors.append("%s[%s]: 'confidence' must be between 0 and 1" % (split, i))
+                    errors.append(f"{split}[{i}]: 'confidence' must be between 0 and 1")
 
         # Each prediction must belong to the instance at the same position
         if instances_data is not None and split in instances_data:
             for i, (source, inst) in enumerate(zip(instances_data[split], instances)):
                 if source.get("tokens") != inst.get("tokens"):
-                    errors.append("%s[%s]: tokens don't match instances.json" % (split, i))
+                    errors.append(f"{split}[{i}]: tokens don't match instances.json")
                 elif source.get("label") != inst.get("label"):
-                    errors.append("%s[%s]: label doesn't match instances.json" % (split, i))
+                    errors.append(f"{split}[{i}]: label doesn't match instances.json")
 
     if len(errors) == 0:
         return (True, errors)
@@ -127,37 +127,37 @@ def validate_metrics(data, schema_version=1):
 
     for split in ["train", "test"]:
         if split not in data:
-            errors.append("Missing required key: %s" % split)
+            errors.append(f"Missing required key: {split}")
             continue
 
         metrics = data[split]
         if not isinstance(metrics, dict):
-            errors.append("%s must be a dictionary" % split)
+            errors.append(f"{split} must be a dictionary")
             continue
 
         for metric_name in REQUIRED_METRICS:
             if metric_name not in metrics:
-                errors.append("%s: missing required metric '%s'" % (split, metric_name))
+                errors.append(f"{split}: missing required metric '{metric_name}'")
             else:
                 value = metrics[metric_name]
                 if not isinstance(value, (int, float)):
-                    errors.append("%s.%s: must be a number" % (split, metric_name))
+                    errors.append(f"{split}.{metric_name}: must be a number")
                 elif not (0 <= value <= 1):
-                    errors.append("%s.%s: must be between 0 and 1, got %s" % (split, metric_name, value))
+                    errors.append(f"{split}.{metric_name}: must be between 0 and 1, got {value}")
 
         # Schema v2 requires support counts
         if schema_version == 2:
             if "support" not in metrics:
-                errors.append("%s: schema v2 requires 'support' field" % split)
+                errors.append(f"{split}: schema v2 requires 'support' field")
             elif not isinstance(metrics["support"], dict):
-                errors.append("%s.support: must be a dictionary" % split)
+                errors.append(f"{split}.support: must be a dictionary")
             else:
                 support = metrics["support"]
                 for key in ["positive", "negative"]:
                     if key not in support:
-                        errors.append("%s.support: missing '%s' count" % (split, key))
+                        errors.append(f"{split}.support: missing '{key}' count")
                     elif not isinstance(support[key], int):
-                        errors.append("%s.support.%s: must be an integer" % (split, key))
+                        errors.append(f"{split}.support.{key}: must be an integer")
 
     if len(errors) == 0:
         return True, errors
@@ -179,14 +179,14 @@ def validate_artifact(artifact_path, artifact_type, schema_version=1, instances_
     path = Path(artifact_path)
 
     if not path.exists():
-        print("Error: %s does not exist" % artifact_path, file=sys.stderr)
+        print(f"Error: {artifact_path} does not exist", file=sys.stderr)
         return False
 
     try:
         with open(path) as f:
             data = json.load(f)
     except json.JSONDecodeError as e:
-        print("Error: %s is not valid JSON: %s" % (artifact_path, e), file=sys.stderr)
+        print(f"Error: {artifact_path} is not valid JSON: {e}", file=sys.stderr)
         return False
 
     if artifact_type == "instances":
@@ -200,25 +200,34 @@ def validate_artifact(artifact_path, artifact_type, schema_version=1, instances_
     elif artifact_type == "metrics":
         is_valid, errors = validate_metrics(data, schema_version)
     else:
-        print("Error: Unknown artifact type '%s'" % artifact_type, file=sys.stderr)
+        print(f"Error: Unknown artifact type '{artifact_type}'", file=sys.stderr)
         return False
 
     if not is_valid:
-        print("Validation failed for %s:" % artifact_path, file=sys.stderr)
+        print(f"Validation failed for {artifact_path}:", file=sys.stderr)
         for error in errors:
-            print("  - %s" % error, file=sys.stderr)
+            print(f"  - {error}", file=sys.stderr)
         return False
-    print("Validation passed: %s" % artifact_path)
+    print(f"Validation passed: {artifact_path}")
     return True
 
 
 # CLI entry point
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description="Validate pipeline artifacts")
     parser.add_argument("artifact_path", help="Path to artifact JSON file")
-    parser.add_argument("--type", "-t", required=True, choices=["instances", "predictions", "metrics"], help="Artifact type to validate")
-    parser.add_argument("--schema-version", type=int, default=1, choices=SCHEMA_VERSIONS, help="Schema version")
+    parser.add_argument(
+        "--type",
+        "-t",
+        required=True,
+        choices=["instances", "predictions", "metrics"],
+        help="Artifact type to validate",
+    )
+    parser.add_argument(
+        "--schema-version", type=int, default=1, choices=SCHEMA_VERSIONS, help="Schema version"
+    )
     parser.add_argument("--instances", help="Path to instances.json (predictions only)")
 
     args = parser.parse_args()

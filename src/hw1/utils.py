@@ -60,7 +60,7 @@ def plot(input_path, split, title, xlabel, ylabel, output):
     input_file = Path(input_path)
 
     if input_file.exists() and input_file.suffix == ".json":
-        click.echo("Loading metrics from %s..." % input_path)
+        click.echo(f"Loading metrics from {input_path}...")
         with open(input_file, encoding="utf-8") as f:
             data = json.load(f)
         # Handle metrics format with train/test splits
@@ -73,8 +73,8 @@ def plot(input_path, split, title, xlabel, ylabel, output):
         # Try to parse as JSON string
         try:
             data = json.loads(input_path)
-        except json.JSONDecodeError:
-            raise click.UsageError("Invalid JSON input: %s" % input_path)
+        except json.JSONDecodeError as e:
+            raise click.UsageError(f"Invalid JSON input: {input_path}") from e
 
     # Ensure output directory exists
     output_path = Path(output)
@@ -82,7 +82,7 @@ def plot(input_path, split, title, xlabel, ylabel, output):
 
     fig = plot_bar(data, title=title, xlabel=xlabel, ylabel=ylabel)
     fig.savefig(output_path)
-    click.echo("Plot saved to %s" % output_path)
+    click.echo(f"Plot saved to {output_path}")
 
 
 # CLI entry point: python -m hw1.utils --help

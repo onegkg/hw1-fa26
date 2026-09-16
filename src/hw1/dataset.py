@@ -10,6 +10,7 @@ import click
 @dataclass
 class SentimentInstance:
     """Represents a preprocessed sentiment instance."""
+
     tokens: list[str]
     label: int  # 1 for positive, 0 for negative
     pred: int | None = field(default=None)  # Prediction, assigned after classification
@@ -113,8 +114,12 @@ def get_statistics(train_instances, test_instances):
 @click.command()
 @click.argument("data_path", type=click.Path(exists=True))
 @click.option("--output", "-o", default="build/", help="Output directory for JSON files")
-@click.option("--run-tag", default="default", help="Tag for this pipeline run (creates subdirectory)")
-@click.option("--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version")
+@click.option(
+    "--run-tag", default="default", help="Tag for this pipeline run (creates subdirectory)"
+)
+@click.option(
+    "--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version"
+)
 def preprocess(data_path, output, run_tag, schema_version):
     """Load and preprocess the dataset, save instances and statistics as JSON.
 
@@ -126,8 +131,8 @@ def preprocess(data_path, output, run_tag, schema_version):
     output_dir = Path(output) / run_tag
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    click.echo("Loading data from %s..." % data_path)
-    click.echo("Run tag: %s, Schema version: %s" % (run_tag, schema_ver))
+    click.echo(f"Loading data from {data_path}...")
+    click.echo(f"Run tag: {run_tag}, Schema version: {schema_ver}")
     train_instances, test_instances = load_data(data_path)
     stats = get_statistics(train_instances, test_instances)
 
@@ -152,17 +157,25 @@ def preprocess(data_path, output, run_tag, schema_version):
     instances_path = output_dir / "instances.json"
     with open(instances_path, "w", encoding="utf-8") as f:
         json.dump(instances_data, f, indent=2)
-    click.echo("Saved instances to %s" % instances_path)
+    click.echo(f"Saved instances to {instances_path}")
 
     # Save statistics to JSON
     stats_path = output_dir / "statistics.json"
     with open(stats_path, "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=2)
-    click.echo("Saved statistics to %s" % stats_path)
+    click.echo(f"Saved statistics to {stats_path}")
 
-    click.echo("Train: %s instances (pos: %s, neg: %s)" % (stats['train_count'], stats['train_pos_count'], stats['train_neg_count']))
-    click.echo("Test: %s instances" % stats['test_count'])
-    click.echo("Label ratio in train - pos: %.2f%%, neg: %.2f%%" % (stats['train_pos_ratio'] * 100, stats['train_neg_ratio'] * 100))
+    click.echo(
+        f"Train: {stats['train_count']} instances "
+        f"(pos: {stats['train_pos_count']}, neg: {stats['train_neg_count']})"
+    )
+    click.echo(f"Test: {stats['test_count']} instances")
+    # used `.format` since it is clearer than an f string
+    click.echo(
+        "Label ratio in train - pos: {:.2f}%, neg: {:.2f}%".format(
+            stats["train_pos_ratio"] * 100, stats["train_neg_ratio"] * 100
+        )
+    )
 
 
 # CLI entry point: python -m hw1.dataset --help

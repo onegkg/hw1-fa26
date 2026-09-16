@@ -119,8 +119,12 @@ def compute_metrics(predictions, labels):
 @click.command()
 @click.argument("input_path", type=str)
 @click.option("--output", "-o", default="build/", help="Output directory for metrics JSON")
-@click.option("--run-tag", default="default", help="Tag for this pipeline run (creates subdirectory)")
-@click.option("--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version")
+@click.option(
+    "--run-tag", default="default", help="Tag for this pipeline run (creates subdirectory)"
+)
+@click.option(
+    "--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version"
+)
 def evaluate(input_path, output, run_tag, schema_version):
     """Evaluate predictions and compute metrics.
 
@@ -132,8 +136,8 @@ def evaluate(input_path, output, run_tag, schema_version):
     output_dir = Path(output) / run_tag
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    click.echo("Loading predictions from %s..." % input_path)
-    click.echo("Run tag: %s, Schema version: %s" % (run_tag, schema_ver))
+    click.echo(f"Loading predictions from {input_path}...")
+    click.echo(f"Run tag: {run_tag}, Schema version: {schema_ver}" % (run_tag, schema_ver))
     with open(input_path, encoding="utf-8") as f:
         data = json.load(f)
 
@@ -171,14 +175,18 @@ def evaluate(input_path, output, run_tag, schema_version):
             metrics["support"] = {"positive": pos_count, "negative": neg_count}
 
         results[split] = metrics
-        click.echo("%s metrics: accuracy=%.4f, precision=%.4f, recall=%.4f, f1=%.4f" % (
-            split.capitalize(), metrics['accuracy'], metrics['precision'], metrics['recall'], metrics['f1']))
+        click.echo(
+            f"{split.capitalize()} metrics: "
+            f"accuracy={metrics['accuracy']:.4f}, "
+            f"precision={metrics['precision']:.4f}, "
+            f"recall={metrics['recall']:.4f}, f1={metrics['f1']:.4f}"
+        )
 
     # Save metrics to JSON
     metrics_path = output_dir / "metrics.json"
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
-    click.echo("Saved metrics to %s" % metrics_path)
+    click.echo(f"Saved metrics to {metrics_path}")
 
 
 # CLI entry point: python -m hw1.evaluation --help
