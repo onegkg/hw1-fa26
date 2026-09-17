@@ -32,11 +32,11 @@ check_file_exists() {
     local file=$1
     local description=$2
 
-    if [ -f $file ]; then
-        print_status $GREEN "✓ Found: $description ($file)"
+    if [ -f "$file" ]; then
+        print_status "$GREEN" "✓ Found: $description ($file)"
         return 0
     else
-        print_status $RED "✗ Missing: $description ($file)"
+        print_status "$RED" "✗ Missing: $description ($file)"
         return 1
     fi
 }
@@ -46,11 +46,11 @@ check_dir_exists() {
     local dir=$1
     local description=$2
 
-    if [ -d $dir ]; then
-        print_status $GREEN "✓ Directory exists: $description"
+    if [ -d "$dir" ]; then
+        print_status "$GREEN" "✓ Directory exists: $description"
         return 0
     else
-        print_status $RED "✗ Directory missing: $description"
+        print_status "$RED" "✗ Directory missing: $description"
         return 1
     fi
 }
@@ -61,7 +61,7 @@ validate_artifact() {
     local artifact_type=$2
 
     echo "Validating $artifact_type..."
-    python -m hw1.validate $artifact_path --type $artifact_type --schema-version $SCHEMA_VERSION
+    python -m hw1.validate "$artifact_path" --type "$artifact_type" --schema-version "$SCHEMA_VERSION"
     return $?
 }
 
@@ -70,8 +70,8 @@ count_files() {
     local dir=$1
     local pattern=$2
 
-    local count=$(ls $dir/$pattern 2>/dev/null | wc -l)
-    echo $count
+    local count=$(ls "$dir"/"$pattern" 2>/dev/null | wc -l)
+    echo "$count"
 }
 
 # Main validation logic
@@ -84,8 +84,8 @@ main() {
     echo ""
 
     # Check that output directory exists
-    if [ ! -d $OUTPUT_DIR ]; then
-        print_status $RED "Error: Output directory '$OUTPUT_DIR' does not exist"
+    if [ ! -d "$OUTPUT_DIR" ]; then
+        print_status "$RED" "Error: Output directory '$OUTPUT_DIR' does not exist"
         echo "Have you run 'make run-all' yet?"
         exit 1
     fi
@@ -93,35 +93,35 @@ main() {
     # Check required artifacts exist
     echo "--- Checking artifact files ---"
 
-    check_file_exists $OUTPUT_DIR/instances.json "Preprocessed instances" || errors=$((errors + 1))
-    check_file_exists $OUTPUT_DIR/predictions.json "Model predictions" || errors=$((errors + 1))
-    check_file_exists $OUTPUT_DIR/metrics.json "Evaluation metrics" || errors=$((errors + 1))
+    check_file_exists "$OUTPUT_DIR"/instances.json "Preprocessed instances" || errors=$((errors + 1))
+    check_file_exists "$OUTPUT_DIR"/predictions.json "Model predictions" || errors=$((errors + 1))
+    check_file_exists "$OUTPUT_DIR"/metrics.json "Evaluation metrics" || errors=$((errors + 1))
 
     echo ""
 
     # Validate artifact schemas
     echo "--- Validating artifact schemas ---"
 
-    if [ -f $OUTPUT_DIR/instances.json ]; then
-        validate_artifact $OUTPUT_DIR/instances.json instances || errors=$((errors + 1))
+    if [ -f "$OUTPUT_DIR"/instances.json ]; then
+        validate_artifact "$OUTPUT_DIR"/instances.json instances || errors=$((errors + 1))
     fi
 
-    if [ -f $OUTPUT_DIR/predictions.json ]; then
-        validate_artifact $OUTPUT_DIR/predictions.json predictions || errors=$((errors + 1))
+    if [ -f "$OUTPUT_DIR"/predictions.json ]; then
+        validate_artifact "$OUTPUT_DIR"/predictions.json predictions || errors=$((errors + 1))
     fi
 
-    if [ -f $OUTPUT_DIR/metrics.json ]; then
-        validate_artifact $OUTPUT_DIR/metrics.json metrics || errors=$((errors + 1))
+    if [ -f "$OUTPUT_DIR"/metrics.json ]; then
+        validate_artifact "$OUTPUT_DIR"/metrics.json metrics || errors=$((errors + 1))
     fi
 
     echo ""
 
     # Summary
     if [ $errors -eq 0 ]; then
-        print_status $GREEN "=== All validations passed ==="
+        print_status "$GREEN" "=== All validations passed ==="
         exit 0
     else
-        print_status $RED "=== Validation failed with $errors error(s) ==="
+        print_status "$RED" "=== Validation failed with $errors error(s) ==="
         exit 1
     fi
 }
