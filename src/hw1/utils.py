@@ -7,7 +7,12 @@ import click
 import matplotlib.pyplot as plt
 
 
-def plot_bar(data, title=None, xlabel=None, ylabel=None):
+def plot_bar(
+    data: dict[str, str],
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+) -> plt.Figure:
     """Create a bar plot from a dictionary.
 
     Args:
@@ -51,7 +56,14 @@ def plot_bar(data, title=None, xlabel=None, ylabel=None):
 @click.option("--xlabel", "-x", default=None, help="X-axis label")
 @click.option("--ylabel", "-y", default=None, help="Y-axis label")
 @click.option("--output", "-o", default="out/evaluation_plot.png", help="Output file path")
-def plot(input_path, split, title, xlabel, ylabel, output):
+def plot(
+    input_path: str,
+    split: str,
+    title: str | None,
+    xlabel: str | None,
+    ylabel: str | None,
+    output: str,
+) -> None:
     """Create a bar plot from metrics JSON and save to file.
 
     INPUT_PATH: Path to metrics JSON file from evaluate, or a JSON string.

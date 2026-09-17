@@ -7,13 +7,17 @@ Students must fix linting and type errors in this file.
 import json
 import sys
 from pathlib import Path
+from typing import Any, Literal
 
 REQUIRED_METRICS = ["accuracy", "precision", "recall", "f1"]
 VALID_LABELS = [0, 1]
 SCHEMA_VERSIONS = [1, 2]
 
 
-def validate_instances(data, schema_version=1):
+# data collection with [str] key dict[str, Any]
+def validate_instances(
+    data: dict[str, Any], schema_version: Literal[1, 2] = 1
+) -> tuple[bool, list[str]]:
     """Validate instances.json artifact.
 
     Args:
@@ -62,7 +66,11 @@ def validate_instances(data, schema_version=1):
     return False, errors
 
 
-def validate_predictions(data, schema_version=1, instances_data=None):
+def validate_predictions(
+    data: dict[str, Any],
+    schema_version: Literal[1, 2] = 1,
+    instances_data: dict[str, Any] | None = None,
+) -> tuple[bool, list[str]]:
     """Validate predictions.json artifact.
 
     Predictions must have the same structure as instances but with 'pred' field populated:
@@ -117,7 +125,9 @@ def validate_predictions(data, schema_version=1, instances_data=None):
     return (False, errors)
 
 
-def validate_metrics(data, schema_version=1):
+def validate_metrics(
+    data: dict[str, Any], schema_version: Literal[1, 2] = 1
+) -> tuple[bool, list[str]]:
     """Validate metrics.json artifact.
 
     Metrics must contain accuracy, precision, recall, and f1 for each split,
@@ -164,7 +174,12 @@ def validate_metrics(data, schema_version=1):
     return False, errors
 
 
-def validate_artifact(artifact_path, artifact_type, schema_version=1, instances_path=None):
+def validate_artifact(
+    artifact_path: str | Path,
+    artifact_type: Literal["instances", "predictions", "metrics"],
+    schema_version: Literal[1, 2] = 1,
+    instances_path: str | Path | None = None,
+) -> bool:
     """Validate a pipeline artifact file.
 
     Args:

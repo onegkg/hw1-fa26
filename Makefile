@@ -8,7 +8,7 @@
 # running: make run-all RUN_TAG=experiment1 SCHEMA_VERSION=2
 # should produce artifacts in build/experiment1/ with schema v2 format.
 
-.PHONY: all clean test lint typecheck quality preprocess rule-based evaluate plot validate run-all
+.PHONY: all clean test lint typecheck quality preprocess rule-based evaluate plot validate run-all ci
 
 # Configuration
 DATA_DIR ?= tests/fixtures
@@ -32,6 +32,8 @@ PLOT := $(ARTIFACTS_DIR)/evaluation_plot.png
 # Default target
 all: run-all
 
+ci: quality all
+
 # Clean build artifacts
 clean:
 	rm -rf $(OUTPUT_DIR)
@@ -50,8 +52,11 @@ lint:
 typecheck:
 	mypy
 
+shellcheck:
+	shellcheck --severity=warning scripts/*.sh
+
 # Combined quality checks
-quality: lint typecheck
+quality: lint typecheck shellcheck test
 
 # Preprocess data
 # TODO: Add --run-tag $(RUN_TAG) --schema-version $(SCHEMA_VERSION)
@@ -93,3 +98,4 @@ run-all: clean preprocess rule-based evaluate plot validate
 # Create artifacts directory
 $(ARTIFACTS_DIR):
 	mkdir -p $(ARTIFACTS_DIR)
+

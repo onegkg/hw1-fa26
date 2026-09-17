@@ -3,6 +3,7 @@
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from typing import Any
 
 import click
 
@@ -16,7 +17,7 @@ class SentimentInstance:
     pred: int | None = field(default=None)  # Prediction, assigned after classification
 
 
-def tokenize(text):
+def tokenize(text: str) -> list[str]:
     """Tokenize text by lowercasing, splitting, and stripping whitespace.
 
     Args:
@@ -25,7 +26,7 @@ def tokenize(text):
     Returns:
         List of lowercase tokens with whitespace stripped.
     """
-    tokens = []
+    tokens: list[str] = []
     for token in text.lower().split():
         stripped = token.strip()
         if stripped:
@@ -33,7 +34,7 @@ def tokenize(text):
     return tokens
 
 
-def load_instances(data_dir):
+def load_instances(data_dir: str | Path) -> list[SentimentInstance]:
     """Load sentiment instances from a directory containing pos/ and neg/ subdirs.
 
     Args:
@@ -43,7 +44,7 @@ def load_instances(data_dir):
         List of SentimentInstance objects.
     """
     data_dir = Path(data_dir)
-    instances = []
+    instances: list[SentimentInstance] = []
 
     label_map = {"pos": 1, "neg": 0}
     for label_name, label_value in label_map.items():
@@ -57,7 +58,7 @@ def load_instances(data_dir):
     return instances
 
 
-def load_data(base_path):
+def load_data(base_path: str | Path) -> tuple[list[SentimentInstance], list[SentimentInstance]]:
     """Load train and test datasets.
 
     Args:
@@ -66,13 +67,15 @@ def load_data(base_path):
     Returns:
         Tuple of (train_instances, test_instances).
     """
-    base_path = Path(base_path)
-    train_instances = load_instances(base_path / "train")
-    test_instances = load_instances(base_path / "test")
+    base_path_obj = Path(base_path)
+    train_instances = load_instances(base_path_obj / "train")
+    test_instances = load_instances(base_path_obj / "test")
     return train_instances, test_instances
 
 
-def get_statistics(train_instances, test_instances):
+def get_statistics(
+    train_instances: list[SentimentInstance], test_instances: list[SentimentInstance]
+) -> dict[str, int | float]:
     """Compute dataset statistics.
 
     Args:
@@ -120,7 +123,7 @@ def get_statistics(train_instances, test_instances):
 @click.option(
     "--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version"
 )
-def preprocess(data_path, output, run_tag, schema_version):
+def preprocess(data_path: str | Path, output: str, run_tag: str, schema_version: str | int) -> None:
     """Load and preprocess the dataset, save instances and statistics as JSON.
 
     DATA_PATH: Path to data directory containing train/ and test/ subdirs.
@@ -136,7 +139,7 @@ def preprocess(data_path, output, run_tag, schema_version):
     train_instances, test_instances = load_data(data_path)
     stats = get_statistics(train_instances, test_instances)
 
-    train_data = []
+    train_data: list[dict[str, Any]] = []
     for inst in train_instances:
         train_data.append(asdict(inst))
 
@@ -144,7 +147,7 @@ def preprocess(data_path, output, run_tag, schema_version):
     for inst in test_instances:
         test_data.append(asdict(inst))
 
-    instances_data = {
+    instances_data: dict[str, Any] = {
         "train": train_data,
         "test": test_data,
     }

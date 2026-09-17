@@ -5,9 +5,13 @@ import math
 from abc import ABC, abstractmethod
 from collections import Counter
 from pathlib import Path
+from typing import Any, Literal
 
 import click
-from textblob import TextBlob
+
+# Can't find type stubs for textblob online,
+# if I have the time I'll write them myself but for know we'll just ignore them
+from textblob import TextBlob  # type: ignore[import-untyped]
 
 from hw1.dataset import SentimentInstance
 
@@ -16,7 +20,7 @@ class Classifier(ABC):
     """Abstract base class for sentiment classifiers."""
 
     @abstractmethod
-    def predict(self, instance):
+    def predict(self, instance: SentimentInstance) -> int:
         """Predict the sentiment label for an instance.
 
         Args:
@@ -31,7 +35,7 @@ class Classifier(ABC):
 class RuleBasedClassifier(Classifier):
     """Rule-based classifier using TextBlob sentiment analysis."""
 
-    def predict(self, instance):
+    def predict(self, instance: SentimentInstance) -> Literal[0, 1]:
         """Predict sentiment based on TextBlob polarity score.
 
         Args:
@@ -42,33 +46,37 @@ class RuleBasedClassifier(Classifier):
         """
         text = " ".join(instance.tokens)
         blob = TextBlob(text)
-        polarity = blob.sentiment.polarity
+        polarity: int = blob.sentiment.polarity
 
-        return polarity > 0
+        # had to rewrite to comply with docstring claiming that returns 0 or 1 which cannot
+        # be implicitly converted from bool
+        if polarity > 0:
+            return 1
+        return 0
 
 
 class NaiveBayesClassifier(Classifier):
     """Naive Bayes classifier using Maximum Likelihood Estimation."""
 
-    def __init__(self, smoothing=1.0):
+    def __init__(self, smoothing: float = 1.0) -> None:
         """Initialize the classifier.
 
         Args:
             smoothing: Laplace smoothing parameter (default: 1.0).
         """
-        self.smoothing = smoothing
-        self.class_priors = {}
-        self.word_counts = {}
-        self.class_totals = {}
-        self.vocabulary = set()
+        self.smoothing: float = smoothing
+        self.class_priors: dict[Any, int | float] = {}
+        self.word_counts: dict[int, Counter] = {}
+        self.class_totals: dict[int, int] = {}
+        self.vocabulary: set[str] = set()
 
-    def fit(self, instances):
+    def fit(self, instances: list[SentimentInstance]) -> None:
         """Train the classifier using MLE.
 
         Args:
             instances: List of training SentimentInstance objects.
         """
-        class_counts = Counter()
+        class_counts: Counter[int] = Counter()
         self.word_counts = {1: Counter(), 0: Counter()}
         self.vocabulary = set()
 
@@ -88,7 +96,7 @@ class NaiveBayesClassifier(Classifier):
         for label, counts in self.word_counts.items():
             self.class_totals[label] = sum(counts.values())
 
-    def _log_likelihood(self, tokens, label):
+    def _log_likelihood(self, tokens: list[str], label: int) -> float:
         """Compute log likelihood of tokens given a class label.
 
         Args:
@@ -109,7 +117,7 @@ class NaiveBayesClassifier(Classifier):
 
         return log_prob
 
-    def predict(self, instance):
+    def predict(self, instance: SentimentInstance) -> int:
         """Predict sentiment using Naive Bayes.
 
         Args:
@@ -152,7 +160,9 @@ class NaiveBayesClassifier(Classifier):
 @click.option(
     "--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version"
 )
-def rule_based(file_path, output, run_tag, schema_version):
+def rule_based(
+    file_path: str | Path, output: str | Path, run_tag: str | Path, schema_version: int | str
+) -> None:
     """Predict sentiment using rule-based classifier.
 
     Processes a JSON file from preprocess and outputs predictions.

@@ -2,11 +2,12 @@
 
 import json
 from pathlib import Path
+from typing import Any, Literal
 
 import click
 
 
-def accuracy(predictions, labels):
+def accuracy(predictions: list[Literal[0, 1]], labels: list[Literal[0, 1]]) -> float:
     """Compute accuracy.
 
     Args:
@@ -27,7 +28,9 @@ def accuracy(predictions, labels):
     return correct / len(predictions)
 
 
-def precision(predictions, labels, positive_label=1):
+def precision(
+    predictions: list[Literal[0, 1]], labels: list[Literal[0, 1]], positive_label: Literal[0, 1] = 1
+) -> float:
     """Compute precision for the positive class.
 
     Args:
@@ -53,7 +56,9 @@ def precision(predictions, labels, positive_label=1):
     return true_positives / predicted_positives
 
 
-def recall(predictions, labels, positive_label=1):
+def recall(
+    predictions: list[Literal[0, 1]], labels: list[Literal[0, 1]], positive_label: Literal[0, 1] = 1
+) -> float:
     """Compute recall for the positive class.
 
     Args:
@@ -79,7 +84,9 @@ def recall(predictions, labels, positive_label=1):
     return true_positives / actual_positives
 
 
-def f1_score(predictions, labels, positive_label=1):
+def f1_score(
+    predictions: list[Literal[0, 1]], labels: list[Literal[0, 1]], positive_label: Literal[0, 1] = 1
+) -> float:
     """Compute F1 score for the positive class.
 
     Args:
@@ -98,7 +105,9 @@ def f1_score(predictions, labels, positive_label=1):
     return 2 * p * r / (p + r)
 
 
-def compute_metrics(predictions, labels):
+def compute_metrics(
+    predictions: list[Literal[0, 1]], labels: list[Literal[0, 1]]
+) -> dict[str, Any]:
     """Compute all evaluation metrics.
 
     Args:
@@ -125,7 +134,9 @@ def compute_metrics(predictions, labels):
 @click.option(
     "--schema-version", type=click.Choice(["1", "2"]), default="1", help="Output schema version"
 )
-def evaluate(input_path, output, run_tag, schema_version):
+def evaluate(
+    input_path: str | Path, output: str | Path, run_tag: str | Path, schema_version: str | int
+) -> None:
     """Evaluate predictions and compute metrics.
 
     INPUT_PATH: Path to predictions JSON file from rule_based.
@@ -137,7 +148,7 @@ def evaluate(input_path, output, run_tag, schema_version):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     click.echo(f"Loading predictions from {input_path}...")
-    click.echo(f"Run tag: {run_tag}, Schema version: {schema_ver}" % (run_tag, schema_ver))
+    click.echo(f"Run tag: {run_tag}, Schema version: {schema_ver}")
     with open(input_path, encoding="utf-8") as f:
         data = json.load(f)
 
