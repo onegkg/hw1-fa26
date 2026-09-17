@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 def plot_bar(
-    data: dict[str, str],
+    data: dict[str, float | dict[str, int]],
     title: str | None = None,
     xlabel: str | None = None,
     ylabel: str | None = None,
@@ -28,11 +28,14 @@ def plot_bar(
 
     keys = []
     for k in data.keys():
-        keys.append(k)
+        val = data[k]
+        if type(val) is float:
+            keys.append(k)
 
     values = []
     for v in data.values():
-        values.append(v)
+        if type(v) is float:
+            values.append(v)
 
     ax.bar(keys, values)
 

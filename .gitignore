@@ -1,6 +1,8 @@
 # .DS_Store
 .DS_Store
 
+evidence.png
+
 # Python-generated files
 __pycache__/
 *.py[oc]
