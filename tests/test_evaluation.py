@@ -1,7 +1,6 @@
 """Tests for evaluation module."""
 
 import pytest
-
 from evaluation import accuracy, compute_metrics, f1_score, precision, recall
 
 

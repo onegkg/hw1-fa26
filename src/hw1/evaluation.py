@@ -167,9 +167,6 @@ def evaluate(
 
         metrics = compute_metrics(predictions, labels)
 
-        for name in metrics:
-            metrics[name] = metrics[name] * 100
-
         # Schema v2 adds support counts
         if schema_ver == 2:
             pos_count = 0

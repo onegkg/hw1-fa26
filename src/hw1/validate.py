@@ -97,6 +97,8 @@ def validate_predictions(
                 errors.append(f"{split}[{i}]: missing 'pred' field")
             elif inst["pred"] not in VALID_LABELS:
                 errors.append(f"{split}[{i}]: 'pred' must be 0 or 1, got {inst['pred']}")
+            elif type(inst["pred"]) is not int:
+                errors.append(f"{split}[{i}]: 'pred' must be an integer")
 
             if "label" not in inst:
                 errors.append(f"{split}[{i}]: missing 'label' field")
@@ -114,7 +116,7 @@ def validate_predictions(
 
         # Each prediction must belong to the instance at the same position
         if instances_data is not None and split in instances_data:
-            for i, (source, inst) in enumerate(zip(instances_data[split], instances)):
+            for i, (source, inst) in enumerate(zip(instances_data[split], instances, strict=True)):
                 if source.get("tokens") != inst.get("tokens"):
                     errors.append(f"{split}[{i}]: tokens don't match instances.json")
                 elif source.get("label") != inst.get("label"):
