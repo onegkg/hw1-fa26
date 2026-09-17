@@ -10,14 +10,14 @@
 OUTPUT_DIR=${OUTPUT_DIR:-"build/default"}
 SCHEMA_VERSION=${SCHEMA_VERSION:-1}
 
-# Logging configuration
-VERBOSE=true
-VALIDATION_LOG="validation_results.log"
+# Logging not yet implemented
+# VERBOSE=true
+# VALIDATION_LOG="validation_results.log"
 
 # Color codes for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
+# YELLOW='\033[0;33m' Yellow is unused
 NC='\033[0m' # No Color
 
 # Print a colored message
@@ -41,19 +41,19 @@ check_file_exists() {
     fi
 }
 
-# Check if a directory exists
-check_dir_exists() {
-    local dir=$1
-    local description=$2
-
-    if [ -d "$dir" ]; then
-        print_status "$GREEN" "✓ Directory exists: $description"
-        return 0
-    else
-        print_status "$RED" "✗ Directory missing: $description"
-        return 1
-    fi
-}
+# Check if a directory exists (Unused)
+# check_dir_exists() {
+#     local dir=$1
+#     local description=$2
+#
+#     if [ -d "$dir" ]; then
+#         print_status "$GREEN" "✓ Directory exists: $description"
+#         return 0
+#     else
+#         print_status "$RED" "✗ Directory missing: $description"
+#         return 1
+#     fi
+# }
 
 # Validate an artifact using the Python validator
 validate_artifact() {
@@ -65,14 +65,14 @@ validate_artifact() {
     return $?
 }
 
-# Count files in a directory
-count_files() {
-    local dir=$1
-    local pattern=$2
-
-    local count=$(ls "$dir"/"$pattern" 2>/dev/null | wc -l)
-    echo "$count"
-}
+# Count files in a directory (Unused)
+# count_files() {
+#     local dir=$1
+#     local pattern=$2
+#
+#     local count=$(ls "$dir"/"$pattern" 2>/dev/null | wc -l)
+#     echo "$count"
+# }
 
 # Main validation logic
 main() {
