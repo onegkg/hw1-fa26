@@ -1,12 +1,4 @@
 # HW1 Makefile - NLP Pipeline Automation
-#
-# STUDENTS: You must modify this Makefile to:
-# 1. Uncomment and use RUN_TAG and SCHEMA_VERSION variables
-# 2. Pass --run-tag $(RUN_TAG) and --schema-version $(SCHEMA_VERSION) to CLI commands
-#
-# Currently the pipeline uses hardcoded "default" paths. After your changes,
-# running: make run-all RUN_TAG=experiment1 SCHEMA_VERSION=2
-# should produce artifacts in build/experiment1/ with schema v2 format.
 
 .PHONY: all clean test lint typecheck quality preprocess rule-based evaluate plot validate run-all ci
 
@@ -17,13 +9,11 @@ OUTPUT_DIR := build
 # Let Python find the hw1 package in src/ (for `python -m hw1.<module>`)
 export PYTHONPATH := $(CURDIR)/src
 
-# TODO: Uncomment these variables and pass them to the CLI commands below
-# RUN_TAG ?= default
-# SCHEMA_VERSION ?= 1
+RUN_TAG ?= default
+SCHEMA_VERSION ?= 1
 
 # Artifact paths - currently hardcoded to "default" subdirectory
-# TODO: Update these to use $(RUN_TAG) instead of "default"
-ARTIFACTS_DIR := $(OUTPUT_DIR)/default
+ARTIFACTS_DIR := $(OUTPUT_DIR)/$(RUN_TAG)
 INSTANCES := $(ARTIFACTS_DIR)/instances.json
 PREDICTIONS := $(ARTIFACTS_DIR)/predictions.json
 METRICS := $(ARTIFACTS_DIR)/metrics.json
@@ -59,32 +49,30 @@ shellcheck:
 quality: lint typecheck shellcheck test
 
 # Preprocess data
-# TODO: Add --run-tag $(RUN_TAG) --schema-version $(SCHEMA_VERSION)
 preprocess: $(INSTANCES)
 
 $(INSTANCES): | $(ARTIFACTS_DIR)
-	python -m hw1.dataset $(DATA_DIR) --output $(OUTPUT_DIR)
+	python -m hw1.dataset $(DATA_DIR) --output $(OUTPUT_DIR) --run-tag $(RUN_TAG) --schema-version $(SCHEMA_VERSION)
 
 # Run rule-based classifier
-# TODO: Add --run-tag $(RUN_TAG) --schema-version $(SCHEMA_VERSION)
 rule-based: $(PREDICTIONS)
 
 $(PREDICTIONS): $(INSTANCES)
-	python -m hw1.validate $(INSTANCES) --type instances
-	python -m hw1.models --file $(INSTANCES) --output $(OUTPUT_DIR)
+	python -m hw1.validate $(INSTANCES) --type instances --schema-version $(SCHEMA_VERSION)
+	python -m hw1.models --file $(INSTANCES) --output $(OUTPUT_DIR) --run-tag $(RUN_TAG) --schema-version $(SCHEMA_VERSION)
 
 # Evaluate predictions
-# TODO: Add --run-tag $(RUN_TAG) --schema-version $(SCHEMA_VERSION)
 evaluate: $(METRICS)
 
 $(METRICS): $(PREDICTIONS)
-	python -m hw1.validate $(PREDICTIONS) --type predictions --instances $(INSTANCES)
-	python -m hw1.evaluation $(PREDICTIONS) --output $(OUTPUT_DIR)
+	python -m hw1.validate $(PREDICTIONS) --type predictions --instances $(INSTANCES) --schema-version $(SCHEMA_VERSION)
+	python -m hw1.evaluation $(PREDICTIONS) --output $(OUTPUT_DIR) --run-tag $(RUN_TAG) --schema-version $(SCHEMA_VERSION)
 
 # Generate plot
 plot: $(PLOT)
 
 $(PLOT): $(METRICS)
+	python -m hw1.validate $(METRICS) --type metrics
 	python -m hw1.utils $(METRICS) --output $(PLOT)
 
 # Validate pipeline artifacts

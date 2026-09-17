@@ -167,7 +167,6 @@ def evaluate(
 
         metrics = compute_metrics(predictions, labels)
 
-        # Report metrics as percentages for readability
         for name in metrics:
             metrics[name] = metrics[name] * 100
 
@@ -190,7 +189,8 @@ def evaluate(
             f"{split.capitalize()} metrics: "
             f"accuracy={metrics['accuracy']:.4f}, "
             f"precision={metrics['precision']:.4f}, "
-            f"recall={metrics['recall']:.4f}, f1={metrics['f1']:.4f}"
+            f"recall={metrics['recall']:.4f}, "
+            f"f1={metrics['f1']:.4f}"
         )
 
     # Save metrics to JSON
